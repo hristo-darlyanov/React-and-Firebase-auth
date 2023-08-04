@@ -1,14 +1,52 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
+import { auth } from '../Firebase'
+import { useNavigation } from '@react-navigation/native'
 
 const HomeView = () => {
+
+  const navigation = useNavigation()
+
+  const handleSignOut = () => {
+    auth.signOut()
+    .then(() => {
+      navigation.replace("Login")
+    })
+    .catch(error => alert(error.message))
+  }
+
   return (
-    <View>
-      <Text>HomeView</Text>
+    <View style={styles.container}>
+      <Text>Email: {auth.currentUser?.email}</Text>
+      <TouchableOpacity
+      onPress={handleSignOut}
+        style={styles.button}
+      >
+        <Text style={styles.buttonText}>Sign Out</Text>
+      </TouchableOpacity>
     </View>
   )
 }
 
 export default HomeView
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  button: {
+    backgroundColor: 'blue',
+    width: '60%',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: '700',
+    fontSize: 16
+  },
+})

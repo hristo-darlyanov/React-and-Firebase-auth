@@ -1,10 +1,22 @@
 import { KeyboardAvoidingView, StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {auth} from '../Firebase'
+import { useNavigation } from '@react-navigation/native'
 
 const LoginView = () => { 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+
+    const navigation = useNavigation()
+
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged(user => {
+            if (user) {
+                navigation.replace("Home")
+            }
+        })
+        return unsubscribe
+    })
 
     const handleSignUp = () => {
         auth
@@ -16,6 +28,16 @@ const LoginView = () => {
         .catch(error => alert(error.message))
     }
 
+    const handleLogin = () => {
+        auth
+        .signInWithEmailAndPassword(email, password)
+        .then(userCredentials => {
+            const user = userCredentials.user;
+            console.log("Logged in with:", user.email);
+        })
+        .catch(error => alert(error.message))
+    }
+    
   return (
     <View
         style={styles.container}
@@ -37,13 +59,13 @@ const LoginView = () => {
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity 
-            onPress={()=>{}}
+            onPress={handleLogin}
             style={styles.button}
         >
             <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
         <TouchableOpacity 
-            onPress={()=>{}}
+            onPress={handleSignUp}
             style={[styles.button, styles.buttonOutline]}
         >
             <Text style={styles.buttonOutlineText}>Register</Text>
